@@ -1,0 +1,158 @@
+@model CalendarViewModel
+@{
+    ViewData["Title"] = "Kalender";
+    var culture = new System.Globalization.CultureInfo("sv-SE");
+    var weekdays = new[] { "Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag" };
+}
+
+<div class="app-container">
+    <header class="app-header">
+        <h1 class="app-title">Svensk Kalender</h1>
+        <p class="app-subtitle">Hantera dina uppgifter dag för dag – måndag som första veckodag.</p>
+    </header>
+
+    <main class="main-layout">
+        <section class="calendar-section">
+            <div class="card calendar-card">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">@Model.MonthLabel</h2>
+                        <p class="section-description">Klicka på en dag för att se och hantera uppgifter.</p>
+                    </div>
+                    <div class="calendar-nav">
+                        <a href="@Url.Action("Index", new { year = Model.PrevMonth.Year, month = Model.PrevMonth.Month })" class="nav-button">Föregående</a>
+                        <a href="@Url.Action("Index", new { year = Model.NextMonth.Year, month = Model.NextMonth.Month })" class="nav-button">Nästa</a>
+                    </div>
+                </div>
+
+                <div class="calendar-grid" role="grid" aria-label="Kalender för @Model.MonthLabel">
+                    @foreach (var wd in weekdays)
+                    {
+                        <div class="weekday-header" role="columnheader">
+                            <span class="weekday-full">@wd</span>
+                            <span class="weekday-short">@wd.Substring(0, 3)</span>
+                        </div>
+                    }
+
+                    @foreach (var day in Model.Days)
+                    {
+                        var iso = day.Date.ToString("yyyy-MM-dd");
+                        var css = "day-cell"
+                            + (day.IsCurrentMonth ? "" : " other-month")
+                            + (day.IsToday ? " today" : "");
+                        var badgeCss = day.TotalTasks > 0 && day.CompletedTasks == day.TotalTasks
+                            ? "task-badge task-badge--done"
+                            : "task-badge";
+
+                        <button type="button"
+                                class="@css"
+                                data-date="@iso"
+                                onclick="selectDay(this, '@iso')"
+                                aria-label="@day.Date.ToString("dddd d MMMM", culture)@(day.TotalTasks > 0 ? $", {day.TotalTasks} uppgifter" : "")">
+                            <div class="day-header">
+                                <span class="day-number">@day.Date.Day</span>
+                                @if (day.TotalTasks > 0)
+                                {
+                                    <span class="@badgeCss">@day.CompletedTasks/@day.TotalTasks</span>
+                                }
+                            </div>
+                            @if (day.TotalTasks > 0)
+                            {
+                                <div class="task-dots">
+                                    @foreach (var t in day.Tasks.Take(4))
+                                    {
+                                        <span class="task-dot @(t.IsCompleted ? "task-dot--done" : "")"></span>
+                                    }
+                                    @if (day.TotalTasks > 4)
+                                    {
+                                        <span class="task-more">+@(day.TotalTasks - 4)</span>
+                                    }
+                                </div>
+                            }
+                        </button>
+                    }
+                </div>
+            </div>
+        </section>
+
+        <aside class="task-panel-aside">
+            <div id="taskPanel" class="task-panel-placeholder">
+                <p class="placeholder-text">← Välj en dag för att hantera uppgifter</p>
+            </div>
+        </aside>
+    </main>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+<script>
+    let currentDate = '';
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+    async function post(url, data) {
+        const form = new FormData();
+        form.append('__RequestVerificationToken', token);
+        for (const [k, v] of Object.entries(data)) form.append(k, String(v));
+        const res = await fetch(url, { method: 'POST', body: form });
+        return res.text();
+    }
+
+    function setPanel(html) {
+        document.getElementById('taskPanel').innerHTML = html;
+        document.getElementById('taskPanel').className = 'task-panel-card';
+    }
+
+    async function selectDay(el, date) {
+        document.querySelectorAll('.day-cell.selected').forEach(c => c.classList.remove('selected'));
+        if (el) el.classList.add('selected');
+        currentDate = date;
+        const res = await fetch('/Calendar/GetDay?date=' + date);
+        setPanel(await res.text());
+    }
+
+    async function addTask() {
+        const inp = document.getElementById('newTaskInput');
+        const text = inp?.value?.trim();
+        if (!text || !currentDate) return;
+        setPanel(await post('/Calendar/AddTask', { date: currentDate, text }));
+    }
+
+    async function toggleTask(id) {
+        if (!currentDate) return;
+        setPanel(await post('/Calendar/ToggleTask', { id, date: currentDate }));
+    }
+
+    async function deleteTask(id) {
+        if (!currentDate) return;
+        setPanel(await post('/Calendar/DeleteTask', { id, date: currentDate }));
+    }
+
+    async function clearCompleted() {
+        if (!currentDate) return;
+        setPanel(await post('/Calendar/ClearCompleted', { date: currentDate }));
+    }
+
+    function startEdit(id) {
+        const textEl = document.getElementById('task-text-' + id);
+        const actionsEl = document.getElementById('task-actions-' + id);
+        if (!textEl) return;
+        const current = textEl.textContent.trim();
+        textEl.innerHTML = '<input type="text" class="task-edit-input" id="edit-' + id + '" value="' + current.replace(/"/g, '&quot;') + '" onkeydown="handleEditKey(event,' + id + ')" />';
+        if (actionsEl) actionsEl.style.display = 'none';
+        const inp = document.getElementById('edit-' + id);
+        inp?.focus();
+        inp?.select();
+    }
+
+    async function handleEditKey(e, id) {
+        if (e.key === 'Enter') {
+            const val = document.getElementById('edit-' + id)?.value?.trim();
+            if (val) setPanel(await post('/Calendar/UpdateTask', { id, text: val, date: currentDate }));
+        } else if (e.key === 'Escape') {
+            const res = await fetch('/Calendar/GetDay?date=' + currentDate);
+            setPanel(await res.text());
+        }
+    }
+</script>
+}

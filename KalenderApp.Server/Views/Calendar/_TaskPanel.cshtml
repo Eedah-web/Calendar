@@ -1,0 +1,68 @@
+@model TaskPanelViewModel
+
+<div class="day-editor-header">
+    <h3>@Model.DateLabel</h3>
+    <p>
+        @if (Model.Tasks.Count == 0)
+        {
+            <text>Inga uppgifter ännu – lägg till en nedan.</text>
+        }
+        else
+        {
+            <text>@Model.CompletedCount av @Model.Tasks.Count @(Model.Tasks.Count == 1 ? "uppgift klar" : "uppgifter klara").</text>
+        }
+    </p>
+</div>
+
+<div class="task-input-row">
+    <input type="text"
+           class="task-input"
+           id="newTaskInput"
+           placeholder="Ny uppgift..."
+           aria-label="Lägg till ny uppgift"
+           onkeydown="if(event.key==='Enter') addTask()" />
+    <button type="button" class="add-button" onclick="addTask()">+ Lägg till</button>
+</div>
+
+@if (Model.Tasks.Count > 0)
+{
+    <ul class="task-list" aria-label="Uppgifter">
+        @foreach (var task in Model.Tasks)
+        {
+            <li class="task-item @(task.IsCompleted ? "task-item--done" : "")">
+                <label class="task-check-label">
+                    @if (task.IsCompleted)
+                    {
+                        <input type="checkbox" checked onchange="toggleTask(@task.Id)" aria-label="Avmarkera" />
+                    }
+                    else
+                    {
+                        <input type="checkbox" onchange="toggleTask(@task.Id)" aria-label="Markera klar" />
+                    }
+                </label>
+                <span class="task-text" id="task-text-@task.Id">@task.Text</span>
+                <div class="task-actions" id="task-actions-@task.Id">
+                    @if (!task.IsCompleted)
+                    {
+                        <button type="button"
+                                class="edit-button"
+                                onclick="startEdit(@task.Id)"
+                                aria-label="Redigera uppgift">✏</button>
+                    }
+                    <button type="button"
+                            class="delete-button"
+                            onclick="deleteTask(@task.Id)"
+                            aria-label="Ta bort uppgift">✕</button>
+                </div>
+            </li>
+        }
+    </ul>
+
+    @if (Model.CompletedCount > 0)
+    {
+        <div class="editor-footer">
+            <span>@Model.CompletedCount klar@(Model.CompletedCount != 1 ? "a" : "")</span>
+            <button type="button" class="clear-button" onclick="clearCompleted()">Rensa klara</button>
+        </div>
+    }
+}
