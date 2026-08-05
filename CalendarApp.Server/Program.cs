@@ -13,7 +13,7 @@ if (!app.Environment.IsDevelopment())
 // browser to Supabase (see frontend/src/store.ts), so there is no database
 // access, no controllers and no views here.
 // Aspire copies the Vite build output into wwwroot on publish
-// (see PublishWithContainerFiles in KalenderApp.AppHost/AppHost.cs).
+// (see PublishWithContainerFiles in CalendarApp.AppHost/AppHost.cs).
 app.UseDefaultFiles();
 app.UseStaticFiles();
 

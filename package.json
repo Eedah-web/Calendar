@@ -1,5 +1,5 @@
 {
-  "name": "kalenderapp",
+  "name": "calendarapp",
   "private": true,
   "scripts": {
     "start": "yarn --cwd frontend dev",

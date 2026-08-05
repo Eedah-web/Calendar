@@ -1,4 +1,4 @@
-# KalenderApp
+# CalendarApp
 
 A calendar app for planning tasks per day, per person. The UI is in Swedish; the
 code and comments are in English.
@@ -8,8 +8,8 @@ code and comments are in English.
 | Part                   | Stack                                       |
 | ---------------------- | ------------------------------------------- |
 | `frontend/`            | React 19, Ant Design, Vite, React Router    |
-| `KalenderApp.Server/`  | ASP.NET Core — static host for the frontend |
-| `KalenderApp.AppHost/` | .NET Aspire — orchestrates both of the above |
+| `CalendarApp.Server/`  | ASP.NET Core — static host for the frontend |
+| `CalendarApp.AppHost/` | .NET Aspire — orchestrates both of the above |
 
 All data goes straight from the browser to Supabase (PostgreSQL) via
 `@supabase/supabase-js`, which also handles auth. State is synced to the
@@ -60,7 +60,7 @@ yarn --cwd frontend install
 Via Aspire (starts both the server and the Vite dev server):
 
 ```bash
-dotnet run --project KalenderApp.AppHost
+dotnet run --project CalendarApp.AppHost
 ```
 
 Or the frontend alone:

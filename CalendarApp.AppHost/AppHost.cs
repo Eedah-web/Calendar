@@ -1,6 +1,6 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var server = builder.AddProject<Projects.KalenderApp_Server>("server")
+var server = builder.AddProject<Projects.CalendarApp_Server>("server")
     .WithHttpHealthCheck("/health")
     .WithExternalHttpEndpoints();
 

@@ -1,5 +1,5 @@
 {
   "appHost": {
-    "path": "KalenderApp.AppHost/KalenderApp.AppHost.csproj"
+    "path": "CalendarApp.AppHost/CalendarApp.AppHost.csproj"
   }
 }

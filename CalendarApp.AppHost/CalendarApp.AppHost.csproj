@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KalenderApp.Server\KalenderApp.Server.csproj" />
+    <ProjectReference Include="..\CalendarApp.Server\CalendarApp.Server.csproj" />
   </ItemGroup>
 
   <ItemGroup>

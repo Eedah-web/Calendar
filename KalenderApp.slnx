@@ -1,8 +1,0 @@
-<Solution>
-  <Project Path="frontend/frontend.esproj">
-    <Build />
-    <Deploy />
-  </Project>
-  <Project Path="KalenderApp.AppHost/KalenderApp.AppHost.csproj" />
-  <Project Path="KalenderApp.Server/KalenderApp.Server.csproj" />
-</Solution>
