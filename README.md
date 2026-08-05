@@ -5,19 +5,20 @@ code and comments are in English.
 
 ## Architecture
 
-| Part                   | Stack                                        |
-| ---------------------- | -------------------------------------------- |
-| `frontend/`            | React 19, Ant Design, Vite, React Router     |
-| `KalenderApp.Server/`  | ASP.NET Core MVC, EF Core, Npgsql            |
-| `KalenderApp.AppHost/` | .NET Aspire — orchestrates both of the above  |
+| Part                   | Stack                                       |
+| ---------------------- | ------------------------------------------- |
+| `frontend/`            | React 19, Ant Design, Vite, React Router    |
+| `KalenderApp.Server/`  | ASP.NET Core — static host for the frontend |
+| `KalenderApp.AppHost/` | .NET Aspire — orchestrates both of the above |
 
-Data is stored in Supabase (PostgreSQL). There are two independent paths:
+All data goes straight from the browser to Supabase (PostgreSQL) via
+`@supabase/supabase-js`, which also handles auth. State is synced to the
+`app_state` table keyed by `user_id`, with `localStorage` as a synchronous cache
+(see `frontend/src/store.ts`).
 
-- The **frontend** talks to Supabase directly via `@supabase/supabase-js`. It
-  handles auth and syncs its state to the `app_state` table, keyed by `user_id`.
-  `localStorage` acts as a synchronous cache (see `frontend/src/store.ts`).
-- The **server** talks to the same database over EF Core / Npgsql and owns the
-  `tasks` table.
+The server holds no database access, controllers or views — it only serves the
+built frontend from `wwwroot`, which Aspire populates on publish. It exists so
+the app can be deployed as a single container.
 
 ## Prerequisites
 
@@ -46,18 +47,9 @@ VITE_SUPABASE_ANON_KEY=your-publishable-anon-key
 embedded in the client bundle by design, so **security depends entirely on Row
 Level Security** in Supabase. See [Security](#security).
 
-### 2. Server configuration
+The server needs no configuration — it does not talk to the database.
 
-The database connection string is stored in .NET user secrets, never in the
-repo:
-
-```bash
-dotnet user-secrets set "ConnectionStrings:Supabase" \
-  "Host=db.YOUR-PROJECT.supabase.co;Port=5432;Database=postgres;Username=postgres;Password=YOUR-PASSWORD;SSL Mode=Require" \
-  --project KalenderApp.Server
-```
-
-### 3. Install frontend dependencies
+### 2. Install frontend dependencies
 
 ```bash
 yarn --cwd frontend install
@@ -86,8 +78,8 @@ dotnet build                           # solution
 
 ## Security
 
-- **No secrets in the repo.** The connection string lives in user secrets;
-  frontend config lives in the gitignored `.env.local`.
+- **No secrets in the repo.** The only configuration is the frontend's
+  gitignored `.env.local`, and the key it holds is public by design.
 - **Row Level Security is required.** The anon key is public, so every table the
   frontend touches must have RLS enabled with a policy scoped to the current
   user. For `app_state`:
@@ -106,8 +98,6 @@ dotnet build                           # solution
   select tablename, policyname from pg_policies where schemaname = 'public';
   ```
 
-- **The server has no authentication.** `CalendarController` is unauthenticated,
-  so do not expose the server publicly as-is.
-- **Migrations run on startup** (`db.Database.Migrate()` in `Program.cs`), which
-  requires schema write permissions. Consider running migrations as a separate
-  deploy step instead.
+- **The server exposes no endpoints of its own** beyond static files and the
+  Aspire health checks, which are mapped in development only. It holds no
+  credentials and reaches no database, so there is nothing to authenticate.

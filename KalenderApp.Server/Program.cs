@@ -1,40 +1,26 @@
-using KalenderApp.Server.Data;
-using KalenderApp.Server.Services;
-using Microsoft.EntityFrameworkCore;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-builder.Services.AddControllersWithViews();
-
-var connectionString = builder.Configuration.GetConnectionString("Supabase");
-builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
-builder.Services.AddScoped<TaskService>();
-
 var app = builder.Build();
-
-// Create/upgrade the database schema on startup so the "tasks" table exists.
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
-}
-
-app.UseExceptionHandler("/Home/Error");
 
 if (!app.Environment.IsDevelopment())
 {
     app.UseHsts();
 }
 
+// This service only hosts the built frontend. All data goes straight from the
+// browser to Supabase (see frontend/src/store.ts), so there is no database
+// access, no controllers and no views here.
+// Aspire copies the Vite build output into wwwroot on publish
+// (see PublishWithContainerFiles in KalenderApp.AppHost/AppHost.cs).
+app.UseDefaultFiles();
 app.UseStaticFiles();
-app.UseRouting();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Calendar}/{action=Index}/{id?}");
 
 app.MapDefaultEndpoints();
+
+// Serve index.html for unmatched routes so client-side routing keeps working
+// on a hard refresh of e.g. /day/2026-08-05.
+app.MapFallbackToFile("index.html");
 
 app.Run();
