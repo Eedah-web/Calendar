@@ -3,7 +3,11 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  /* The app only has a light theme (no antd darkAlgorithm anywhere), so pin the
+     scheme. Left as "light dark" the browser picks its dark-mode form-control
+     internals when the OS is in dark mode, which paints autofilled inputs a
+     dark mustard instead of the pale default. */
+  color-scheme: light;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -42,6 +46,31 @@ h1 {
 button {
   font-family: inherit;
   cursor: pointer;
+}
+
+/* Chrome/Edge/Safari paint their own background on autofilled inputs and ignore
+   background-color, so an inset box-shadow is the only way to repaint it. The
+   colour matches antd's filled input (colorFillTertiary over white = #f5f5f5)
+   so the autofilled field is indistinguishable from an empty one. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  box-shadow: 0 0 0 1000px #f5f5f5 inset;
+  -webkit-text-fill-color: rgba(0, 0, 0, 0.88);
+  caret-color: rgba(0, 0, 0, 0.88);
+  /* The UA re-applies its own background on interaction; an absurdly long
+     transition keeps it from ever reaching a visible state. */
+  transition: background-color 600000s 0s;
+}
+
+/* The shadow above only covers the inner <input>, which sits inside antd's
+   affix wrapper. Pin the wrapper to the same colour so its hover/focus shade
+   never shows up as a frame around the repainted field. */
+.ant-input-affix-wrapper:has(input:-webkit-autofill),
+.ant-input-affix-wrapper:hover:has(input:-webkit-autofill),
+.ant-input-affix-wrapper-focused:has(input:-webkit-autofill) {
+  background-color: #f5f5f5;
 }
 
 @media (prefers-reduced-motion: reduce) {
