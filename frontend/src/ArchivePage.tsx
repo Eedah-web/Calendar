@@ -11,6 +11,7 @@ import dayjs, { type Dayjs } from 'dayjs';
 import 'dayjs/locale/sv';
 import { loadArchive, loadTasks, saveArchive, saveTasks, tagColor, uid, type ArchivedNote, type Task, type TaskMap } from './store';
 import { useIsMobile } from './useIsMobile';
+import Logo from './Logo';
 
 dayjs.locale('sv');
 
@@ -287,6 +288,7 @@ export default function ArchivePage() {
           <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/')} style={{ background: 'rgba(255,255,255,.15)', border: 'none', color: '#fff' }} />
           <InboxOutlined style={{ color: '#fff', fontSize: 18 }} />
           <Title level={3} style={{ margin: 0, color: '#fff' }}>Arkiv</Title>
+          {!isMobile && <Logo variant="red" size="sm" scale={0.95} style={{ marginLeft: 225 }} />}
         </div>
         <div style={{ maxWidth: 980, margin: isMobile ? '16px auto' : '32px auto', padding: isMobile ? '0 12px' : '0 24px' }}>
           <div style={{ background: '#fff', borderRadius: 8, padding: isMobile ? 14 : 24, boxShadow: '0 1px 3px rgba(0,0,0,.06)' }}>

@@ -16,6 +16,7 @@ import {
   savePersons, savePresets, type ArchivedNote, type Task, type TaskMap,
 } from './store';
 import { useIsMobile } from './useIsMobile';
+import Logo from './Logo';
 
 const COLOR_BG: Record<string, string> = {
   blue:    '#bae0ff',
@@ -282,6 +283,7 @@ export default function CalendarPage() {
         }}>
           <Title level={3} style={{ margin: 0, color: '#fff' }}>Kalender</Title>
           {!isMobile && <Text style={{ color: 'rgba(255,255,255,.85)' }}>Hantera uppgifter dag för dag</Text>}
+          {!isMobile && <Logo variant="red" size="sm" scale={0.95} style={{ marginLeft: 60 }} />}
         </div>
 
         {/* Date banner */}

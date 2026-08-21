@@ -24,6 +24,7 @@ export default function Logo({ size = 'md', variant = 'glass', scale = 1, style 
 
   if (variant === 'red') {
     const strokeWidth = 1.2 * scale;
+    const redSub = (big ? 16 : 14) * scale;
     return (
       <div style={{ display: 'inline-flex', alignItems: 'baseline', gap: 4 * scale, ...style }}>
         <span style={{
@@ -37,7 +38,7 @@ export default function Logo({ size = 'md', variant = 'glass', scale = 1, style 
           E<span style={{ marginLeft: 4 * scale }}>daah</span>
         </span>
         <span style={{
-          fontWeight: 800, fontSize: sub, color: '#e0202a',
+          fontWeight: 800, fontSize: redSub, color: '#e0202a',
           WebkitTextStroke: `${strokeWidth * 0.7}px #000`,
           textShadow: strokeShadow(strokeWidth * 0.7),
           paintOrder: 'stroke fill',

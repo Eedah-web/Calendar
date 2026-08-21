@@ -16,6 +16,7 @@ import {
   type ArchivedNote, type Note, type Task, type TaskMap,
 } from './store';
 import { useIsMobile } from './useIsMobile';
+import Logo from './Logo';
 
 dayjs.locale('sv');
 
@@ -384,6 +385,8 @@ export default function DayPage() {
           <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/')} style={{ borderColor: 'rgba(255,255,255,.5)', color: '#fff', background: 'rgba(255,255,255,.15)' }}>
             Tillbaka
           </Button>
+
+          {!isMobile && <Logo variant="red" size="sm" scale={0.95} style={{ marginLeft: 251 }} />}
 
           <div style={{
             ...(isMobile

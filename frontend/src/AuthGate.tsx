@@ -6,7 +6,6 @@ import { supabase } from './supabaseClient';
 import { clearLocal, hydrate } from './store';
 import Login from './Login';
 import ResetPassword from './ResetPassword';
-import Logo from './Logo';
 
 const centered: CSSProperties = {
   minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -51,9 +50,6 @@ export default function AuthGate({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <div style={{ position: 'fixed', top: 14, left: 20, zIndex: 90 }}>
-        <Logo size="sm" />
-      </div>
       <Button
         icon={<LogoutOutlined />}
         onClick={logout}
