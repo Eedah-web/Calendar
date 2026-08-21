@@ -10,7 +10,10 @@ import {
 import type { CalendarProps } from 'antd';
 import svSE from 'antd/locale/sv_SE';
 import dayjs, { type Dayjs } from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
 import 'dayjs/locale/sv';
+
+dayjs.extend(isoWeek);
 import {
   TAG_COLORS, loadArchive, loadPersons, loadPresets, loadTasks,
   savePersons, savePresets, type ArchivedNote, type Task, type TaskMap,
@@ -109,7 +112,27 @@ export default function CalendarPage() {
     if (info.type === 'date') {
       const iso = current.format('YYYY-MM-DD');
       const list = taskMap[iso] ?? [];
-      if (!list.length) return null;
+
+      // Monday of each row gets a small week-number badge (ISO week, Swedish convention).
+      // Clicking it filters the archive's "Per datum" tab to that week (Mon-Sun).
+      const weekBadge = current.day() === 1 ? (
+        <span
+          onClick={(e) => {
+            e.stopPropagation();
+            const weekStart = current.startOf('isoWeek').format('YYYY-MM-DD');
+            const weekEnd = current.endOf('isoWeek').format('YYYY-MM-DD');
+            navigate(`/archive?tab=dag&date=${weekStart}&to=${weekEnd}`);
+          }}
+          title={`Visa vecka ${current.isoWeek()} i arkivet`}
+          style={{ position: 'absolute', top: 2, left: 4, fontSize: 10, color: '#237804', fontWeight: 700, cursor: 'pointer' }}
+        >
+          v.{current.isoWeek()}
+        </span>
+      ) : null;
+
+      if (!list.length) {
+        return weekBadge ? <div style={{ position: 'relative', minHeight: 16 }}>{weekBadge}</div> : null;
+      }
       const total = list.length;
       const rows = [
         { count: list.filter((t: Task) => t.status === 'active').length,   label: 'Active',   color: '#1677ff' },
@@ -123,20 +146,24 @@ export default function CalendarPage() {
       // cells. The count is visible immediately (no hover needed); tap the day for full info.
       if (isMobile) {
         return (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 5px', justifyContent: 'center', alignItems: 'center', marginTop: 2 }}>
-            {rows.map((r) => (
-              <span key={r.label} style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontSize: 10, color: r.color, fontWeight: 700, lineHeight: 1 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: r.color, display: 'inline-block' }} />
-                {r.count}
-              </span>
-            ))}
-            {hasNotes && <FileTextOutlined style={{ fontSize: 10, color: '#1677ff' }} />}
+          <div style={{ position: 'relative' }}>
+            {weekBadge}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 5px', justifyContent: 'center', alignItems: 'center', marginTop: 2 }}>
+              {rows.map((r) => (
+                <span key={r.label} style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontSize: 10, color: r.color, fontWeight: 700, lineHeight: 1 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: r.color, display: 'inline-block' }} />
+                  {r.count}
+                </span>
+              ))}
+              {hasNotes && <FileTextOutlined style={{ fontSize: 10, color: '#1677ff' }} />}
+            </div>
           </div>
         );
       }
 
       return (
         <div style={{ position: 'relative', paddingBottom: hasNotes ? 16 : 0 }}>
+          {weekBadge}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 1, marginTop: 2 }}>
             {rows.map((r) => (
               <span key={r.label} style={{ fontSize: 10, color: r.color, fontWeight: 700, lineHeight: '14px', whiteSpace: 'nowrap' }}>
