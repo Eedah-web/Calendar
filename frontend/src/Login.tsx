@@ -65,9 +65,9 @@ export default function Login() {
 
   return (
     <div style={{
-      minHeight: '100vh', position: 'relative', overflow: 'hidden',
+      minHeight: '100vh', position: 'relative', overflowX: 'hidden', overflowY: 'auto',
       display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', justifyContent: 'center',
-      padding: 24, gap: isMobile ? 20 : 0,
+      padding: 24, gap: isMobile ? 20 : 40,
       background: 'linear-gradient(135deg, #13c2c2 0%, #1677ff 100%)',
       zoom: isMobile ? 1 : 1 / 1.5,
     }}>
@@ -75,15 +75,9 @@ export default function Login() {
       <div style={{ position: 'absolute', top: -120, left: -120, width: 380, height: 380, borderRadius: '50%', background: 'rgba(255,255,255,.12)', filter: 'blur(8px)' }} />
       <div style={{ position: 'absolute', bottom: -140, right: -100, width: 420, height: 420, borderRadius: '50%', background: 'rgba(255,255,255,.10)', filter: 'blur(8px)' }} />
 
-      {/* on mobile the logo is a normal flex sibling (stacked above the card) so it can
-          never overlap the card - on desktop there's room to let it float freely */}
-      {isMobile ? (
-        <Logo variant="red" scale={1.1} style={{ zIndex: 1 }} />
-      ) : (
-        <div style={{ position: 'absolute', top: 140, left: 100, zIndex: 1 }}>
-          <Logo variant="red" scale={4} />
-        </div>
-      )}
+      {/* a normal flex sibling (not absolutely positioned) so it always pushes the
+          card aside/down instead of floating over it, at any viewport size */}
+      <Logo variant="red" scale={isMobile ? 1.1 : 3} style={{ zIndex: 1, flexShrink: 0 }} />
 
       <style>{`
         @keyframes loginIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
