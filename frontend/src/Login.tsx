@@ -66,8 +66,8 @@ export default function Login() {
   return (
     <div style={{
       minHeight: '100vh', position: 'relative', overflowX: 'hidden', overflowY: 'auto',
-      display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', justifyContent: 'center',
-      padding: 24, gap: isMobile ? 20 : 40,
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      padding: 24, gap: isMobile ? 20 : 28,
       background: 'linear-gradient(135deg, #13c2c2 0%, #1677ff 100%)',
       zoom: isMobile ? 1 : 1 / 1.5,
     }}>

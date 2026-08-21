@@ -5,6 +5,7 @@ import { App } from 'antd';
 import './index.css';
 import CalendarPage from './CalendarPage';
 import DayPage from './DayPage';
+import WeekPage from './WeekPage';
 import ArchivePage from './ArchivePage';
 import AuthGate from './AuthGate';
 
@@ -16,6 +17,7 @@ createRoot(document.getElementById('root')!).render(
           <Routes>
             <Route path="/" element={<CalendarPage />} />
             <Route path="/day/:date" element={<DayPage />} />
+            <Route path="/week/:date" element={<WeekPage />} />
             <Route path="/archive" element={<ArchivePage />} />
           </Routes>
         </BrowserRouter>
