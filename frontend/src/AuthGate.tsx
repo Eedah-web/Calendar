@@ -5,6 +5,8 @@ import type { Session } from '@supabase/supabase-js';
 import { supabase } from './supabaseClient';
 import { clearLocal, hydrate } from './store';
 import Login from './Login';
+import ResetPassword from './ResetPassword';
+import Logo from './Logo';
 
 const centered: CSSProperties = {
   minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -14,10 +16,14 @@ export default function AuthGate({ children }: { children: ReactNode }) {
   // undefined = loading session, null = signed out, Session = signed in
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const [ready, setReady] = useState(false); // data fetched for the current user
+  const [recovery, setRecovery] = useState(false); // came from a "forgot password" email link
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => setSession(s));
+    const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
+      setSession(s);
+      if (event === 'PASSWORD_RECOVERY') setRecovery(true);
+    });
     return () => sub.subscription.unsubscribe();
   }, []);
 
@@ -40,10 +46,14 @@ export default function AuthGate({ children }: { children: ReactNode }) {
 
   if (session === undefined) return <div style={centered}><Spin size="large" /></div>;
   if (!session) return <Login />;
+  if (recovery) return <ResetPassword onDone={() => setRecovery(false)} />;
   if (!ready) return <div style={centered}><Spin size="large" tip="Hämtar din kalender..." /></div>;
 
   return (
     <>
+      <div style={{ position: 'fixed', top: 14, left: 20, zIndex: 90 }}>
+        <Logo size="sm" />
+      </div>
       <Button
         icon={<LogoutOutlined />}
         onClick={logout}
