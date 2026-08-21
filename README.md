@@ -5,24 +5,21 @@ code and comments are in English.
 
 ## Architecture
 
-| Part                   | Stack                                       |
-| ---------------------- | ------------------------------------------- |
-| `frontend/`            | React 19, Ant Design, Vite, React Router    |
-| `CalendarApp.Server/`  | ASP.NET Core — static host for the frontend |
-| `CalendarApp.AppHost/` | .NET Aspire — orchestrates both of the above |
+| Part         | Stack                                    |
+| ------------ | ----------------------------------------- |
+| `frontend/`  | React 19, Ant Design, Vite, React Router |
 
 All data goes straight from the browser to Supabase (PostgreSQL) via
 `@supabase/supabase-js`, which also handles auth. State is synced to the
 `app_state` table keyed by `user_id`, with `localStorage` as a synchronous cache
 (see `frontend/src/store.ts`).
 
-The server holds no database access, controllers or views — it only serves the
-built frontend from `wwwroot`, which Aspire populates on publish. It exists so
-the app can be deployed as a single container.
+There is no backend server — the frontend is built as static files and
+deployed to Azure Static Web Apps via GitHub Actions
+(`.github/workflows/azure-static-web-apps-happy-hill-0f4378d10.yml`).
 
 ## Prerequisites
 
-- .NET 10 SDK
 - Node.js `^20.19.0 || >=22.12.0`
 - Yarn
 - A Supabase project
@@ -47,8 +44,6 @@ VITE_SUPABASE_ANON_KEY=your-publishable-anon-key
 embedded in the client bundle by design, so **security depends entirely on Row
 Level Security** in Supabase. See [Security](#security).
 
-The server needs no configuration — it does not talk to the database.
-
 ### 2. Install frontend dependencies
 
 ```bash
@@ -56,14 +51,6 @@ yarn --cwd frontend install
 ```
 
 ## Running
-
-Via Aspire (starts both the server and the Vite dev server):
-
-```bash
-dotnet run --project CalendarApp.AppHost
-```
-
-Or the frontend alone:
 
 ```bash
 yarn dev
@@ -73,7 +60,6 @@ yarn dev
 
 ```bash
 yarn --cwd frontend build              # tsc -b && vite build
-dotnet build                           # solution
 ```
 
 ## Security
@@ -97,7 +83,3 @@ dotnet build                           # solution
   select tablename, rowsecurity from pg_tables where schemaname = 'public';
   select tablename, policyname from pg_policies where schemaname = 'public';
   ```
-
-- **The server exposes no endpoints of its own** beyond static files and the
-  Aspire health checks, which are mapped in development only. It holds no
-  credentials and reaches no database, so there is nothing to authenticate.
