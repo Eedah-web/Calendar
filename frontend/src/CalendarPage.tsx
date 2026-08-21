@@ -89,8 +89,9 @@ export default function CalendarPage() {
   const monthGridWeeks = (() => {
     const gridStart = calDate.startOf('month').startOf('isoWeek');
     const lastWeekStart = calDate.endOf('month').startOf('isoWeek');
-    // Both are midnight-Monday timestamps, so this divides evenly - no rounding needed.
-    const weeksCount = lastWeekStart.diff(gridStart, 'day') / 7 + 1;
+    // Both are midnight-Monday timestamps, so this divides evenly - Math.round is just a
+    // safety net in case a future dayjs version changes its DST handling in diff().
+    const weeksCount = Math.round(lastWeekStart.diff(gridStart, 'day') / 7) + 1;
     return Array.from({ length: weeksCount }, (_, w) =>
       Array.from({ length: 7 }, (_, d) => gridStart.add(w * 7 + d, 'day')),
     );
