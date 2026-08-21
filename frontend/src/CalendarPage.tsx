@@ -88,8 +88,9 @@ export default function CalendarPage() {
      trail-out days from the neighbouring months (like a normal month calendar) ── */
   const monthGridWeeks = (() => {
     const gridStart = calDate.startOf('month').startOf('isoWeek');
-    const gridEnd = calDate.endOf('month').endOf('isoWeek');
-    const weeksCount = Math.round(gridEnd.diff(gridStart, 'day') / 7) + 1;
+    const lastWeekStart = calDate.endOf('month').startOf('isoWeek');
+    // Both are midnight-Monday timestamps, so this divides evenly - no rounding needed.
+    const weeksCount = lastWeekStart.diff(gridStart, 'day') / 7 + 1;
     return Array.from({ length: weeksCount }, (_, w) =>
       Array.from({ length: 7 }, (_, d) => gridStart.add(w * 7 + d, 'day')),
     );
