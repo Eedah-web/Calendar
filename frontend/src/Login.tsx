@@ -71,9 +71,10 @@ export default function Login() {
       background: 'linear-gradient(135deg, #13c2c2 0%, #1677ff 100%)',
       zoom: isMobile ? 1 : 1 / 1.5,
     }}>
-      {/* decorative blurred circles for depth */}
-      <div style={{ position: 'absolute', top: -120, left: -120, width: 380, height: 380, borderRadius: '50%', background: 'rgba(255,255,255,.12)', filter: 'blur(8px)' }} />
-      <div style={{ position: 'absolute', bottom: -140, right: -100, width: 420, height: 420, borderRadius: '50%', background: 'rgba(255,255,255,.10)', filter: 'blur(8px)' }} />
+      {/* decorative blurred circles for depth - fixed (not absolute) so they don't
+          add extra scrollable space to the page when content is taller than the viewport */}
+      <div style={{ position: 'fixed', top: -120, left: -120, width: 380, height: 380, borderRadius: '50%', background: 'rgba(255,255,255,.12)', filter: 'blur(8px)' }} />
+      <div style={{ position: 'fixed', bottom: -140, right: -100, width: 420, height: 420, borderRadius: '50%', background: 'rgba(255,255,255,.10)', filter: 'blur(8px)' }} />
 
       {/* a normal flex sibling (not absolutely positioned) so it always pushes the
           card aside/down instead of floating over it, at any viewport size */}
