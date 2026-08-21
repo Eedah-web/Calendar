@@ -377,22 +377,21 @@ export default function DayPage() {
         <div style={{
           position: 'relative',
           background: 'linear-gradient(135deg, #13c2c2 0%, #1677ff 100%)',
-          padding: isMobile ? '12px 16px' : '16px 32px',
+          padding: isMobile ? '12px 16px' : '16px 220px 16px 32px',
           boxShadow: '0 2px 12px rgba(22,119,255,.25)',
           display: 'flex', alignItems: 'center', gap: isMobile ? 10 : 16,
           flexWrap: 'wrap',
         }}>
-          <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/')} style={{ borderColor: 'rgba(255,255,255,.5)', color: '#fff', background: 'rgba(255,255,255,.15)' }}>
-            Tillbaka
-          </Button>
-
-          {!isMobile && <Logo variant="red" size="sm" scale={0.95} style={{ marginLeft: 251 }} />}
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 16, flex: isMobile ? '1 1 100%' : '0 0 auto' }}>
+            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/')} style={{ borderColor: 'rgba(255,255,255,.5)', color: '#fff', background: 'rgba(255,255,255,.15)' }}>
+              Tillbaka
+            </Button>
+            <Logo variant="red" size="sm" scale={isMobile ? 0.55 : 0.95} style={{ marginLeft: isMobile ? 8 : 20 }} />
+          </div>
 
           <div style={{
-            ...(isMobile
-              ? { width: '100%', justifyContent: 'center' }
-              : { position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }),
-            display: 'flex', alignItems: 'center', gap: 8,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            flex: isMobile ? '1 1 100%' : 1, order: isMobile ? 3 : 0,
           }}>
             <Button
               shape="circle"
@@ -410,6 +409,7 @@ export default function DayPage() {
               style={{ borderColor: 'rgba(255,255,255,.5)', color: '#fff', background: 'rgba(255,255,255,.15)' }}
             />
           </div>
+
         </div>
 
         <div style={{ margin: isMobile ? 16 : 32, display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '400px 1fr', gap: isMobile ? 16 : 24, alignItems: 'start' }}>

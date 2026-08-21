@@ -277,13 +277,13 @@ export default function CalendarPage() {
         {/* Header */}
         <div style={{
           background: 'linear-gradient(135deg, #13c2c2 0%, #1677ff 100%)',
-          padding: isMobile ? '14px 16px' : '16px 32px',
+          padding: isMobile ? '14px 16px' : '16px 220px 16px 32px',
           boxShadow: '0 2px 12px rgba(22,119,255,.25)',
           display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
         }}>
           <Title level={3} style={{ margin: 0, color: '#fff' }}>Kalender</Title>
           {!isMobile && <Text style={{ color: 'rgba(255,255,255,.85)' }}>Hantera uppgifter dag för dag</Text>}
-          {!isMobile && <Logo variant="red" size="sm" scale={0.95} style={{ marginLeft: 60 }} />}
+          <Logo variant="red" size="sm" scale={isMobile ? 0.55 : 0.95} style={{ marginLeft: isMobile ? 8 : 24 }} />
         </div>
 
         {/* Date banner */}

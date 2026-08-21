@@ -68,6 +68,7 @@ export default function Login() {
       minHeight: '100vh', position: 'relative', overflow: 'hidden',
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
       background: 'linear-gradient(135deg, #13c2c2 0%, #1677ff 100%)',
+      zoom: isMobile ? 1 : 1 / 1.5,
     }}>
       {/* decorative blurred circles for depth */}
       <div style={{ position: 'absolute', top: -120, left: -120, width: 380, height: 380, borderRadius: '50%', background: 'rgba(255,255,255,.12)', filter: 'blur(8px)' }} />
